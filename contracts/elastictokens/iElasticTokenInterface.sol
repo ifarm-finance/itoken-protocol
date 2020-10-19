@@ -38,6 +38,11 @@ contract iElasticTokenInterface is iElasticTokenStorage, iTokenGovernanceStorage
      */
     event NewIncentivizer(address oldIncentivizer, address newIncentivizer);
 
+    /**
+    * @notice Sets the IFABank contract
+    */
+    event NewBanker(address oldBanker, address newBanker);
+
     /* - ERC20 Events - */
 
     /**
@@ -104,6 +109,8 @@ contract iElasticTokenInterface is iElasticTokenStorage, iTokenGovernanceStorage
     function _setRebaser(address rebaser_) external;
 
     function _setIncentivizer(address incentivizer_) external;
+
+    function _setBanker(address banker_) external;
 
     function _setPendingGov(address pendingGov_) external;
 

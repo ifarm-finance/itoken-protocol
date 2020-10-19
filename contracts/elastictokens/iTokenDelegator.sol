@@ -381,6 +381,15 @@ contract iTokenDelegator is iElasticTokenInterface, iTokenDelegatorInterface {
         delegateAndReturn();
     }
 
+    function _setBanker(address banker_)
+    external
+    {
+        // Shh
+        banker_;
+
+        delegateAndReturn();
+    }
+
     function _setIncentivizer(address incentivizer_)
     external
     {

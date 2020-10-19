@@ -48,6 +48,11 @@ contract iElasticTokenStorage {
     address public incentivizer;
 
     /**
+    * @notice IFABank address of ifarm protocol
+    */
+    address public banker;
+
+    /**
      * @notice Total supply of iTokens
      */
     uint256 public totalSupply;

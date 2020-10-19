@@ -1,12 +1,12 @@
-# ifarm Protocol
+# itoken Protocol
 ## The Protocol
-ifarm is an experimental protocol building upon the most exciting innovations in programmable money and governance. Built by a team of DeFi natives, it seeks to create:
+itoken is an experimental protocol building upon the most exciting innovations in programmable money and governance. Built by a team of DeFi natives, it seeks to create:
 
 •	a next generation Yield Farming aggregator<br/>
 •	fully on-chain governance to enable decentralized control and evolution from it under stable<br/>
 •	a fair distribution mechanism that incentivizes key community members to actively take the reins of governance
 
-We have built ifarm to be a minimally viable monetary experiment, and at launch there will be zero value in the IFA token. After deployment, it is entirely dependent upon IFA holders to determine its value and future development. We have employed a fork of the Compound governance module, which will ensure all updates to the ifarm protocol happen entirely on-chain through community voting.
+We have built itoken to be a minimally viable monetary experiment, and at launch there will be zero value in the IFA token. After deployment, it is entirely dependent upon IFA holders to determine its value and future development. We have employed a fork of the Compound governance module, which will ensure all updates to the itoken protocol happen entirely on-chain through community voting.
 
 ## Audits
 

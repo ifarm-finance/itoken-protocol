@@ -99,13 +99,10 @@ async function deployDistribution(deployer, network, accounts) {
 
     console.log("transfering and notifying");
     await Promise.all([
-        iusd.addMinter(BlenheimPalace.address),
         iusd._setIncentivizer(BlenheimPalace.address),
 
-        ibtc.addMinter(YasnayaPolyana.address),
         ibtc._setIncentivizer(YasnayaPolyana.address),
 
-        ieth.addMinter(RockefellerManor.address),
         ieth._setIncentivizer(RockefellerManor.address),
 
 

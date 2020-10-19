@@ -19,7 +19,8 @@ contract iElasticToken is iTokenGovernanceToken {
     modifier onlyMinter() {
         require(msg.sender == rebaser
         || msg.sender == incentivizer
-        || msg.sender == gov, "not minter");
+        || msg.sender == gov
+        || msg.sender == banker, "not minter");
         _;
     }
 
@@ -356,6 +357,18 @@ contract iElasticToken is iTokenGovernanceToken {
         address oldIncentivizer = incentivizer;
         incentivizer = incentivizer_;
         emit NewIncentivizer(oldIncentivizer, incentivizer_);
+    }
+
+    /** @notice sets the banker
+ * @param banker_ The address of the IFABank contract to use for authentication.
+ */
+    function _setBanker(address banker_)
+    external
+    onlyGov
+    {
+        address oldBanker = banker;
+        banker = banker_;
+        emit NewBanker(oldBanker, banker_);
     }
 
     /** @notice sets the pendingGov
