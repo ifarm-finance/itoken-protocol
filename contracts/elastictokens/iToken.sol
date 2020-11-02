@@ -16,6 +16,11 @@ contract iElasticToken is iTokenGovernanceToken {
         _;
     }
 
+    modifier onlyBanker() {
+        require(msg.sender == banker);
+        _;
+    }
+
     modifier onlyMinter() {
         require(msg.sender == rebaser
         || msg.sender == incentivizer
@@ -108,8 +113,8 @@ contract iElasticToken is iTokenGovernanceToken {
         return true;
     }
 
-    /// @notice Burns `_amount` token in `account`. Must only be called by the gov (IFABank).
-    function burnFrom(address account, uint256 amount) external onlyGov returns (bool) {
+    /// @notice Burns `_amount` token in `account`. Must only be called by the IFABank.
+    function burnFrom(address account, uint256 amount) external onlyBanker returns (bool) {
         // decreased  Allowance
         uint256 allowance = _allowedFragments[account][msg.sender];
         uint256 decreasedAllowance = allowance.sub(amount);
