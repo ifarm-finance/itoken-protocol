@@ -15,24 +15,9 @@ export class Account {
     this.walletInfo = {};
   }
 
-  async getYAMWalletBalance() {
-    this.walletInfo["DAI"] = await this.contracts.yam.methods.balanceOf(this.accountInfo).call();
-    return this.walletInfo["DAI"]
-  }
-
-  async getYCRVWalletBalance() {
-    this.walletInfo["YCRV"] = await this.contracts.ycrv.methods.balanceOf(this.accountInfo).call();
-    return this.walletInfo["YCRV"]
-  }
-
-  async getYFIWalletBalance() {
-    this.walletInfo["YFI"] = await this.contracts.yfi.methods.balanceOf(this.accountInfo).call();
-    return this.walletInfo["YFI"]
-  }
-
-  async getUNIAmplWalletBalance() {
-    this.walletInfo["UNIAmpl"] = await this.contracts.UNIAmpl.methods.balanceOf(this.accountInfo).call();
-    return this.walletInfo["UNIAmpl"]
+  async getsCRVWalletBalance() {
+    this.walletInfo["sCRV"] = await this.contracts.scrv.methods.balanceOf(this.accountInfo).call();
+    return this.walletInfo["sCRV"]
   }
 
   async getWETHWalletBalance() {

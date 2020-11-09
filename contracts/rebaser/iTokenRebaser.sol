@@ -922,7 +922,7 @@ contract iTokenRebaser {
                 hex'ff',
                 factory,
                 keccak256(abi.encodePacked(token0, token1)),
-                hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash
+                hex'c1c39578ac88490fe2205a42473b4c3d7eca7a1df6c3ed697d5f61c064bf70b4' // init code hash
             ))));
     }
 
