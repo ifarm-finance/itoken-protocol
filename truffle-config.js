@@ -8,6 +8,7 @@ const HDWalletProvider = require("@truffle/hdwallet-provider");
 var Web3 = require('web3');
 
 module.exports = {
+    migrations_directory: "./migrations/ignore_migrations",
     compilers: {
         solc: {
             version: '0.5.17',
@@ -39,7 +40,7 @@ module.exports = {
         },
         development: {
             host: '127.0.0.1',
-            port: 9545,
+            port: 8545,
             // gasPrice: 100000000000, // 100 gwei
             gas: 6721975,
             network_id: '*',

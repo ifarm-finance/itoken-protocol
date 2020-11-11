@@ -155,14 +155,20 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
     });
 
     after(async () => {
-        // remove liquidity, return iUSD amount and sCRV amount
-        await this.removeAllLiquidity(contractsAddress.iUSD, contractsAddress.sCRV, alice);
+
     });
 
     afterEach(async () => {
         // after each case
-        console.log('------- afterEach --------')
-        // console.log(await this.rebaserInfo());
+        // remove liquidity, return iUSD amount and sCRV amount
+        let accounts = [alice, bob, carol, breeze]
+        for (let i = 0; i < accounts.length; i++) {
+            let account = accounts[i]
+            let liquidity = await this.uniswapPair.methods.balanceOf(account).call();
+            if (liquidity > 0) {
+                await this.removeAllLiquidity(contractsAddress.iUSD, contractsAddress.sCRV, account);
+            }
+        }
     });
 
     context('Main business scenarios', async () => {
