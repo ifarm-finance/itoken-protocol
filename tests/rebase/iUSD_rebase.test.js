@@ -1,7 +1,7 @@
 const { expectRevert, time } = require('@openzeppelin/test-helpers');
 const BN = web3.utils.BN;
 const ether = (amount) => { return web3.utils.toWei(`${amount}`) };
-const now = () => { return Math.floor((new Date()).getTime() / 1000) };
+const nowSysTime = () => { return Math.floor((new Date()).getTime() / 1000) };
 const path = require('path');
 const Rebaser = artifacts.require('iTokenRebaser');
 const Reserves = artifacts.require("iTokenReserves");
@@ -83,7 +83,6 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
         // public function
         this.addLiquidity = async (amountADesired, amountBDesired, to) => {
             let reserves = await this.uniswapPair.methods.getReserves().call();
-
             let amountA = amountADesired;
             let amountB = amountBDesired;
             let amountAMin = new BN(amountADesired).sub(new BN(1));
@@ -144,10 +143,28 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
             ).send({ from: to, gas: 6000000 });
         }
 
+        // internal Next Rebase timestamp
+        this.internalNextRebase = async () => {
+            let nowBlockTime = new BN(await time.latest());
+            // 12 hours past how much sec
+            let past = nowBlockTime.mod(this.intervalSec);
+            if (past >= this.offSetSec.add(this.windowLengthSec)) {
+                return this.offSetSec.add(this.intervalSec.sub(past))
+            }
+            if (past < this.offSetSec) {
+                return this.offSetSec.sub(past);
+            } else {
+                return new BN(0);
+            }
+        }
+
         this.rebaserInfo = async () => {
+            let reserves = await this.uniswapPair.methods.getReserves().call();
             let mainTarget = {};
             mainTarget.sCRVReserves = await this.sCRV.methods.balanceOf(this.reserve.address).call();
             mainTarget.iUSDReserves = await this.iUSD.methods.balanceOf(this.reserve.address).call();
+            mainTarget.uniswapReserves0 = reserves[0];
+            mainTarget.uniswapReserves1 = reserves[1];
             mainTarget.treasury = new BN(mainTarget.sCRVReserves).add(new BN(mainTarget.iUSDReserves)).toString();
             mainTarget.targetPrice = (await this.rebaser.targetRate()).toString();
             mainTarget.maxSlippageFactor = (await this.rebaser.maxSlippageFactor()).toString();
@@ -182,79 +199,33 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
 
     context('Main business scenarios', async () => {
         it('positive rebasing', async () => {
-            let nowBlockTime = new BN(await time.latest());
-            let advanceTime = () => {
-                // 12 hours past how much sec
-                let past = nowBlockTime.mod(this.intervalSec);
-                if (past >= this.offSetSec.add(this.windowLengthSec)) {
-                    return this.offSetSec.add(this.intervalSec.sub(past))
-                }
-                if (past < this.offSetSec) {
-                    return this.offSetSec.sub(past);
-                } else {
-                    return new BN(0);
-                }
-            }
+            await this.addLiquidity(ether(200), ether(20), alice);
+            await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(2), contractsAddress.iUSD, alice);
+            await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(3), contractsAddress.iUSD, alice);
+            console.log(`rebase before info:\n`, await this.rebaserInfo());
 
-            let reserves = await this.uniswapPair.methods.getReserves().call();
-            let amountADesired = ether(100);
-            let amountBDesired = ether(100);
-            let amountAOptimal = await this.uniswapRouter.methods.quote(amountADesired, reserves[0], reserves[1]).call();
-            let amountBOptimal = await this.uniswapRouter.methods.quote(amountBDesired, reserves[0], reserves[1]).call();
-            let now = new BN(await time.latest());
-
-            await this.addLiquidity(ether(20000), ether(2000), alice);
-            // await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(10), contractsAddress.iUSD, alice);
-            // await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(20), contractsAddress.iUSD, alice);
-            await this.swapExactTokensForTokens(contractsAddress.iUSD, ether(100), contractsAddress.sCRV, alice);
-            await this.swapExactTokensForTokens(contractsAddress.iUSD, ether(200), contractsAddress.sCRV, alice);
-            console.log(await this.rebaserInfo());
-            reserves = await this.uniswapPair.methods.getReserves().call();
-            console.log(`rebase reserves before:${reserves[0]},${reserves[1]}`);
-
-            await time.increase(advanceTime().toNumber());
-
-            await this.rebaser.rebase({ from: alice });
-
-            aliceBalanceOf = await this.iUSD.methods.balanceOf(alice).call();
-            console.log(aliceBalanceOf.toString());
-
+            let internalNextRebase = await this.internalNextRebase()
+            await time.increase(internalNextRebase.toNumber());
+            await this.rebaser.rebase();
 
             await time.increase(10);
-            console.log(await this.rebaserInfo());
-            reserves = await this.uniswapPair.methods.getReserves().call();
-            console.log(`rebase reserves after:${reserves[0]},${reserves[1]}`);
+            console.log(`rebase after info:\n`, await this.rebaserInfo());
         })
 
-        it('negative rebasing', async () => {
+        it.skip('negative rebasing', async () => {
             let lastRebaseTimestampSec = await this.rebaser.lastRebaseTimestampSec()
-            let reserves = await this.uniswapPair.methods.getReserves().call();
-            let amountADesired = ether(100);
-            let amountBDesired = ether(100);
-            let amountAOptimal = await this.uniswapRouter.methods.quote(amountADesired, reserves[0], reserves[1]).call();
-            let amountBOptimal = await this.uniswapRouter.methods.quote(amountBDesired, reserves[0], reserves[1]).call();
-            let now = new BN(await time.latest());
             let incrementToTime = new BN(lastRebaseTimestampSec).add(new BN(12 * 3600));
 
             await this.addLiquidity(ether(20000), ether(2000), alice);
             await this.swapExactTokensForTokens(contractsAddress.iUSD, ether(20), contractsAddress.sCRV, alice);
             await this.swapExactTokensForTokens(contractsAddress.iUSD, ether(20), contractsAddress.sCRV, alice);
-            console.log(`formatCurrentPrice:${(await this.rebaserInfo()).formatCurrentPrice}`);
-            reserves = await this.uniswapPair.methods.getReserves().call();
-            console.log(`rebase reserves before:${reserves[0]},${reserves[1]}`);
-            console.log(`lastRebaseTimestampSec:${lastRebaseTimestampSec.toString()}`)
+            console.log(`rebase before info:\n`, await this.rebaserInfo());
+
             await increaseTo(incrementToTime.toNumber());
-
-            let rebaseiUSDBalanceOf = await this.iUSD.methods.balanceOf(this.reserve.address).call();
-            let rebasesCRVBalanceOf = await this.sCRV.methods.balanceOf(this.reserve.address).call();
-            console.log(rebaseiUSDBalanceOf.toString(), rebasesCRVBalanceOf.toString());
-
-            await this.rebaser.rebase({ from: alice, gas: '6000000' });
+            await this.rebaser.rebase();
 
             await time.increase(10);
-            console.log(await this.rebaserInfo());
-            reserves = await this.uniswapPair.methods.getReserves().call();
-            console.log(`rebase reserves before:${reserves[0]},${reserves[1]}`);
+            console.log(`rebase after info:\n`, await this.rebaserInfo());
         });
     });
 });
