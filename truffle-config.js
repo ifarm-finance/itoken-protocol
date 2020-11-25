@@ -9,6 +9,7 @@ var Web3 = require('web3');
 
 module.exports = {
     migrations_directory: "./migrations/ignore_migrations",
+    // migrations_directory: "./migrations/",
     compilers: {
         solc: {
             version: '0.5.17',

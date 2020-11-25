@@ -5,9 +5,11 @@ const nowSysTime = () => { return Math.floor((new Date()).getTime() / 1000) };
 const path = require('path');
 const Rebaser = artifacts.require('iTokenRebaser');
 const Reserves = artifacts.require("iTokenReserves");
+const { newContractAt, newContract } = require('../lib/ContractAction');
 
 const basedir = path.dirname(path.dirname(__dirname));
 const contractJsonPath = path.join(basedir, 'build/contracts');
+const contractBytecodePath = path.join(basedir, 'tests/lib/bytecode')
 
 const iTokenJson = require(path.join(contractJsonPath, 'iTokenDelegator.json'))
 const mockERC20Json = require(path.join(contractJsonPath, 'MockERC20.json'))
@@ -16,15 +18,17 @@ const uniswapFactoryAbi = require('../lib/unifact2.json');
 const uniswapPairAbi = require('../lib/uni2.json');
 const { increaseTo } = require('@openzeppelin/test-helpers/src/time');
 
+const uniswapFactoryBytecode = require(path.join(contractBytecodePath, 'UniswapV2Factory.json'))
+const uniswapRouterBytecode = require(path.join(contractBytecodePath, 'UniswapV2Router02.json'))
 
 const contractsAddress = {
     'iETH': "0x600B3132Bb97aA7D1D6bE574e8a4AF693A959dAF",
     'wETH': '0x7A530768CddbBB3FE9Ac7D7A174aAF44922af19d',
     'iUSD': '0x5C06F3eB9cF03D026ED7D7e8eA2c0F2a02A30052',
     'sCRV': '0x6BF1DbEcccd5F3a4d57beC45E9eA3e5f7edc9e7d',
-    'uniswapFactory': '0x37E28138E834fACDfA82aDc20cC2FCa23f196559',
-    'uniswapV2Router': "0xE38076A58598538D2365696E2e74D1F8247E8319",
-    'pair': '',
+    'uniswapFactory': '0x01E396fC2b6681f6891820584a240AAecab8637C',
+    'uniswapV2Router': "0x92c8bE7C2e3dCF17B587bD4a7Bb84Ca6219E27c3",
+    'pair': '0xc45d9b07eaDBDb54c88E3363F02d6B908abb3e82',
     'publicGoods': '0x0000000000000000000000000000000000000000'
 }
 
@@ -35,50 +39,37 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
     before(async () => {
         this.iUSD = new web3.eth.Contract(iTokenJson.abi, contractsAddress.iUSD);
         this.sCRV = new web3.eth.Contract(mockERC20Json.abi, contractsAddress.sCRV);
+        this.iETH = new web3.eth.Contract(iTokenJson.abi, contractsAddress.iETH)
+        this.wETH = new web3.eth.Contract(mockERC20Json.abi, contractsAddress.wETH);
         this.uniswapRouter = new web3.eth.Contract(uniswapRouterAbi, contractsAddress.uniswapV2Router);
         this.uniswapFactory = new web3.eth.Contract(uniswapFactoryAbi, contractsAddress.uniswapFactory);
+        // this.uniswapFactory = await newContract.UniswapV2Factory(alice, [alice]);
+        // this.uniswapFactory.address = this.uniswapFactory.options.address;
+        // this.uniswapRouter = await newContract.UniswapV2Router02(alice, [this.uniswapFactory.address, contractsAddress.wETH]);
+        // await this.uniswapFactory.methods.createPair(contractsAddress.iUSD, contractsAddress.sCRV).send({ from: alice, gas: 6000000 });
+        // contractsAddress.uniswapV2Router = this.uniswapRouter.options.address;
+        // contractsAddress.uniswapFactory = this.uniswapFactory.address;
+
         contractsAddress.pair = await this.uniswapFactory.methods.getPair(contractsAddress.iUSD, contractsAddress.sCRV).call();
+
         this.uniswapPair = new web3.eth.Contract(uniswapPairAbi, contractsAddress.pair);
+
         this.reserve = await Reserves.new(contractsAddress.sCRV, contractsAddress.iUSD, { from: alice });
         this.rebaser = await Rebaser.new(contractsAddress.iUSD, contractsAddress.sCRV, contractsAddress.uniswapFactory, this.reserve.address, contractsAddress.publicGoods, 0, { from: alice });
-        // iUSD approve
-        await this.iUSD.methods.approve(contractsAddress.uniswapV2Router, maxApprove).send({ from: alice, gas: 3000000 });
-        await this.iUSD.methods.approve(this.rebaser.address, maxApprove).send({ from: alice, gas: 3000000 });
-        await this.iUSD.methods.approve(this.reserve.address, maxApprove).send({ from: alice, gas: 3000000 });
-        await this.iUSD.methods.approve(contractsAddress.uniswapFactory, maxApprove).send({ from: alice, gas: 3000000 });
-        // sCRV approve
-        await this.sCRV.methods.approve(contractsAddress.uniswapV2Router, maxApprove).send({ from: alice, gas: 3000000 });
-        await this.sCRV.methods.approve(this.rebaser.address, maxApprove).send({ from: alice, gas: 3000000 });
-        await this.sCRV.methods.approve(this.reserve.address, maxApprove).send({ from: alice, gas: 3000000 });
-        await this.sCRV.methods.approve(contractsAddress.uniswapFactory, maxApprove).send({ from: alice, gas: 3000000 });
+
+        // all token approve
+        let tokens = [this.iUSD, this.sCRV, this.iETH, this.wETH];
+        for (let i = 0; i < tokens.length; i++) {
+            await tokens[i].methods.approve(contractsAddress.uniswapV2Router, maxApprove).send({ from: alice, gas: 3000000 });
+            await tokens[i].methods.approve(contractsAddress.uniswapFactory, maxApprove).send({ from: alice, gas: 3000000 });
+            await tokens[i].methods.approve(this.rebaser.address, maxApprove).send({ from: alice, gas: 3000000 });
+        }
+
         // pair approve
         await this.uniswapPair.methods.approve(contractsAddress.uniswapV2Router, maxApprove).send({ from: alice, gas: 3000000 });
         await this.uniswapPair.methods.approve(contractsAddress.uniswapFactory, maxApprove).send({ from: alice, gas: 3000000 });
         // iUSD init rebase contract address
         await this.iUSD.methods._setRebaser(this.rebaser.address).send({ from: alice, gas: 3000000 });
-
-        this.amountDesiredIUSD = ether(100);
-        this.amountDesiredSCRV = ether(100);
-
-        // init rebase settings
-        // 8 hours (28800 sec)
-        this.offSetSec = new BN(28800);
-        // 12 hours(43200 sec)
-        this.intervalSec = new BN(43200);
-        // 1 hours (3600 sec)
-        this.windowLengthSec = new BN(3600);
-
-        // init twap
-        await this.rebaser.init_twap({ from: alice });
-        let init_twap = await this.rebaser.timeOfTWAPInit();
-        let priceCumulativeLast = await this.rebaser.priceCumulativeLast();
-
-        // activate rebasing
-        // now blocktime >=  init_twap + rebaseDelay(1 days)
-        let incrementToTime = new BN(init_twap).add(new BN('86400')).toNumber();
-        // 24 hours before activate rebasing
-        time.increaseTo(incrementToTime);
-        await this.rebaser.activate_rebasing({ from: alice });
 
         // public function
         this.addLiquidity = async (amountADesired, amountBDesired, to) => {
@@ -95,8 +86,8 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
             }
             let deadline = new BN(await time.latest()).add(new BN('3600')).toNumber();
             await this.uniswapRouter.methods.addLiquidity(
-                contractsAddress.iUSD,
-                contractsAddress.sCRV,
+                contractsAddress.iETH,
+                contractsAddress.wETH,
                 amountA,
                 amountB,
                 amountAMin,
@@ -143,6 +134,10 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
             ).send({ from: to, gas: 6000000 });
         }
 
+        // addliquidity
+        // await this.addLiquidity(ether(2000), ether(200), alice);
+        // await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(120), contractsAddress.iUSD, alice);
+
         // internal Next Rebase timestamp
         this.internalNextRebase = async () => {
             let nowBlockTime = new BN(await time.latest());
@@ -157,6 +152,26 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
                 return new BN(0);
             }
         }
+
+        // init rebase settings
+        // 8 hours (28800 sec)
+        this.offSetSec = new BN(28800);
+        // 12 hours(43200 sec)
+        this.intervalSec = new BN(43200);
+        // 1 hours (3600 sec)
+        this.windowLengthSec = new BN(3600);
+
+        // init twap
+        await this.rebaser.init_twap({ from: alice });
+        let init_twap = await this.rebaser.timeOfTWAPInit();
+        let priceCumulativeLast = await this.rebaser.priceCumulativeLast();
+
+        // activate rebasing
+        // now blocktime >=  init_twap + rebaseDelay(1 days)
+        let incrementToTime = new BN(init_twap).add(new BN('86400')).toNumber();
+        // 24 hours before activate rebasing
+        time.increaseTo(incrementToTime);
+        await this.rebaser.activate_rebasing({ from: alice });
 
         this.rebaserInfo = async () => {
             let reserves = await this.uniswapPair.methods.getReserves().call();
@@ -192,16 +207,16 @@ contract('iUSD Rebase', async ([alice, bob, carol, breeze]) => {
             let account = accounts[i]
             let liquidity = await this.uniswapPair.methods.balanceOf(account).call();
             if (liquidity > 0) {
-                await this.removeAllLiquidity(contractsAddress.iUSD, contractsAddress.sCRV, account);
+                await this.removeAllLiquidity(contractsAddress.iETH, contractsAddress.wETH, account);
             }
         }
     });
 
     context('Main business scenarios', async () => {
         it('positive rebasing', async () => {
-            await this.addLiquidity(ether(200), ether(20), alice);
-            await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(2), contractsAddress.iUSD, alice);
-            await this.swapExactTokensForTokens(contractsAddress.sCRV, ether(3), contractsAddress.iUSD, alice);
+            await this.addLiquidity(ether(2000), ether(20), alice);
+            await this.swapExactTokensForTokens(contractsAddress.wETH, ether(2), contractsAddress.iETH, alice);
+            await this.swapExactTokensForTokens(contractsAddress.wETH, ether(3), contractsAddress.iETH, alice);
             console.log(`rebase before info:\n`, await this.rebaserInfo());
 
             let internalNextRebase = await this.internalNextRebase()
