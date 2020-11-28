@@ -46,6 +46,13 @@ module.exports = {
             gas: 6721975,
             network_id: '*',
         },
+        demo: {
+            host: '8.129.187.233',
+            port: 28545,
+            // gasPrice: 100000000000, // 100 gwei
+            gas: 6721975,
+            network_id: '*',
+        },
         /*
         mainnet: {
             network_id: '1',
