@@ -176,9 +176,10 @@ contract iTokenRebaser {
     )
     public
     {
-        minRebaseTimeIntervalSec = 12 hours;
-        rebaseWindowOffsetSec = 28800;
-        // 8am/8pm UTC rebases
+        minRebaseTimeIntervalSec = 4 hours;
+
+        rebaseWindowOffsetSec = 0;
+
 
         (address token0, address token1) = sortTokens(itokenAddress_, reserveToken_);
 
