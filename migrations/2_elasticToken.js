@@ -34,7 +34,7 @@ async function deployToken(deployer, network) {
             "ifarm.finance iBTC",
             "iBTC",
             18,
-            "900000000000000000000", // print extra few mil for user
+            "90000000000000000000000000", // print extra few mil for user
             iBTCImplementation.address,
             "0x"
         );
@@ -43,7 +43,7 @@ async function deployToken(deployer, network) {
             "ifarm.finance iBTC",
             "iBTC",
             18,
-            "900000000000000000000",
+            "90000000000000000000000000",
             iBTCImplementation.address,
             "0x"
         );
@@ -55,7 +55,7 @@ async function deployToken(deployer, network) {
             "ifarm.finance iETH",
             "iETH",
             18,
-            "9000000000000000000000", // print extra few mil for user
+            "90000000000000000000000000", // print extra few mil for user
             iBTCImplementation.address,
             "0x"
         );
@@ -64,7 +64,7 @@ async function deployToken(deployer, network) {
             "ifarm.finance iETH",
             "iETH",
             18,
-            "9000000000000000000000",
+            "90000000000000000000000000",
             iETHImplementation.address,
             "0x"
         );
@@ -76,7 +76,7 @@ async function deployToken(deployer, network) {
             "ifarm.finance iUSD",
             "iUSD",
             18,
-            "9000000000000000000000000", // print extra few mil for user
+            "90000000000000000000000000", // print extra few mil for user
             iBTCImplementation.address,
             "0x"
         );
@@ -85,7 +85,7 @@ async function deployToken(deployer, network) {
             "ifarm.finance iUSD",
             "iUSD",
             18,
-            "9000000000000000000000000",
+            "90000000000000000000000000",
             iUSDImplementation.address,
             "0x"
         );
