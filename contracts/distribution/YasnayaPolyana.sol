@@ -560,7 +560,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x2C7a51A357d5739C5C74Bf3C96816849d2c9F726);
+    IERC20 public uni_lp = IERC20(0xE66F6273De1481d4dd19F45303613072128B1400);
 
     uint256 private _totalSupply;
 
@@ -593,7 +593,7 @@ interface IiToken {
 }
 
 contract YasnayaPolyana is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public ibtc = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
+    IERC20 public ibtc = IERC20(0x72021548D50aE9650474f0e44e1b97A1fDa7ec62);
     uint256 public constant DURATION = 7 days;
 
     uint256 public initreward = 180 * 10**18; // 180 iBTC

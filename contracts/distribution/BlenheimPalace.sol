@@ -560,7 +560,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x2C7a51A357d5739C5C74Bf3C96816849d2c9F726);
+    IERC20 public uni_lp = IERC20(0x364f980cbC06e5773c933C7266A812215B626974);
 
     uint256 private _totalSupply;
 
@@ -593,7 +593,7 @@ interface IiToken {
 }
 
 contract BlenheimPalace is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public iusd = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
+    IERC20 public iusd = IERC20(0x396a3BD7dD826870505532122109f8c59253F34f);
     uint256 public constant DURATION = 7 days;
 
     uint256 public initreward = 1200000 * 10**18; // 1,200,000 iUSD

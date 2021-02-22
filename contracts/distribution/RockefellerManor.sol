@@ -560,7 +560,7 @@ contract LPTokenWrapper {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x2C7a51A357d5739C5C74Bf3C96816849d2c9F726);
+    IERC20 public uni_lp = IERC20(0xFb598ccaaBB3296E0515c88fec9969E8D67057aE);
 
     uint256 private _totalSupply;
 
@@ -593,7 +593,7 @@ interface IiToken {
 }
 
 contract RockefellerManor is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public ieth = IERC20(0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16);
+    IERC20 public ieth = IERC20(0x3B10CE8EE476353E90e432a8B046D7557A175caE);
     uint256 public constant DURATION = 7 days;
 
     uint256 public initreward = 2500 * 10**18; // 2500 iETH
