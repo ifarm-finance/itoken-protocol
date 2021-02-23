@@ -31,8 +31,8 @@ async function deployToken(deployer, network) {
     await deployer.deploy(iBTCImplementation);
     if (network != "mainnet") {
         await deployer.deploy(iBTCProxy,
-            "ifarm.finance iBTC",
-            "iBTC",
+            "RiceQuant BTC",
+            "rBTC",
             18,
             "90000000000000000000000000", // print extra few mil for user
             iBTCImplementation.address,
@@ -40,8 +40,8 @@ async function deployToken(deployer, network) {
         );
     } else {
         await deployer.deploy(iBTCProxy,
-            "ifarm.finance iBTC",
-            "iBTC",
+            "RiceQuant BTC",
+            "rBTC",
             18,
             "90000000000000000000000000",
             iBTCImplementation.address,
@@ -52,8 +52,8 @@ async function deployToken(deployer, network) {
     await deployer.deploy(iETHImplementation);
     if (network != "mainnet") {
         await deployer.deploy(iETHProxy,
-            "ifarm.finance iETH",
-            "iETH",
+            "RiceQuant ETH",
+            "rETH",
             18,
             "90000000000000000000000000", // print extra few mil for user
             iBTCImplementation.address,
@@ -61,8 +61,8 @@ async function deployToken(deployer, network) {
         );
     } else {
         await deployer.deploy(iETHProxy,
-            "ifarm.finance iETH",
-            "iETH",
+            "RiceQuant ETH",
+            "rETH",
             18,
             "90000000000000000000000000",
             iETHImplementation.address,
@@ -73,8 +73,8 @@ async function deployToken(deployer, network) {
     await deployer.deploy(iUSDImplementation);
     if (network != "mainnet") {
         await deployer.deploy(iUSDProxy,
-            "ifarm.finance iUSD",
-            "iUSD",
+            "RiceQuant USD",
+            "rUSD",
             18,
             "90000000000000000000000000", // print extra few mil for user
             iBTCImplementation.address,
@@ -82,8 +82,8 @@ async function deployToken(deployer, network) {
         );
     } else {
         await deployer.deploy(iUSDProxy,
-            "ifarm.finance iUSD",
-            "iUSD",
+            "RiceQuant iUSD",
+            "rUSD",
             18,
             "90000000000000000000000000",
             iUSDImplementation.address,
