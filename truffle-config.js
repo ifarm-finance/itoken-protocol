@@ -28,11 +28,11 @@ module.exports = {
     },
 
     networks: {
-        ropsten: {
-            network_id: '3',
+        hecotestnet: {
+            network_id: '256',
             provider: () => new HDWalletProvider(
                 [process.env.DEPLOYER_PRIVATE_KEY],
-                'https://ropsten.infura.io/v3/' + process.env.INFURA_ID,0,1),
+                'https://http-testnet.hecochain.com',0,1),
             // gasPrice: 30000000000, // 10 gwei
             gas: 6721975,
             from: process.env.DEPLOYER_ACCOUNT,

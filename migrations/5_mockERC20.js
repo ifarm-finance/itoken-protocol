@@ -24,10 +24,9 @@ async function deployToken(deployer, network) {
     //    await deployer.deploy(USDC, "USDC", "USDC", 6, "100000000000000000000000");
     //    await deployer.deploy(USDT, "USDT", "USDT", 6, "200000000000000000000000");
     //    await deployer.deploy(sUSD, "sUSD", "sUSD", 18, "500000000000000000000000000");
-    await deployer.deploy(DAI, "DAI", "DAI", 18, "800000000000000000000000000");
-    await deployer.deploy(wBTC, "wBTC", "wBTC", 18, "800000000000000000000000000");
-    await deployer.deploy(wETH, "wETH", "wETH", 18, "800000000000000000000000000");
-    await deployer.deploy(USD, "USD", "USD", 18, "800000000000000000000000000");
+    await deployer.deploy(DAI, "HUSD", "HUSD", 18, "800000000000000000000000000");
+    await deployer.deploy(wBTC, "HBTC", "HBTC", 18, "800000000000000000000000000");
+    await deployer.deploy(wETH, "HETH", "HETH", 18, "800000000000000000000000000")
     //    await deployer.deploy(bUSD, "bUSD", "bUSD", 18, "800000000000000000000000000");
     //    await deployer.deploy(PAX, "PAX", "PAX", 18, "400000000000000000000000000");
     //    await deployer.deploy(mUSD, "mUSD", "mUSD", 18, "200000000000000000000000000");
