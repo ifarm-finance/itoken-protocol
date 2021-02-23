@@ -31,7 +31,11 @@ async function deployToken(deployer, network) {
     await deployer.deploy(iBTCImplementation);
     if (network != "mainnet") {
         await deployer.deploy(iBTCProxy,
+<<<<<<< HEAD
             "ricequant-protocol rBTC",
+=======
+            "RiceQuant BTC",
+>>>>>>> 64d579fe518083827f18fabf25f67e3e6f3fa91c
             "rBTC",
             18,
             "90000000000000000000000000", // print extra few mil for user
@@ -40,7 +44,11 @@ async function deployToken(deployer, network) {
         );
     } else {
         await deployer.deploy(iBTCProxy,
+<<<<<<< HEAD
             "ricequant-protocol rBTC",
+=======
+            "RiceQuant BTC",
+>>>>>>> 64d579fe518083827f18fabf25f67e3e6f3fa91c
             "rBTC",
             18,
             "90000000000000000000000000",
@@ -52,7 +60,11 @@ async function deployToken(deployer, network) {
     await deployer.deploy(iETHImplementation);
     if (network != "mainnet") {
         await deployer.deploy(iETHProxy,
+<<<<<<< HEAD
             "ricequant-protocol rETH",
+=======
+            "RiceQuant ETH",
+>>>>>>> 64d579fe518083827f18fabf25f67e3e6f3fa91c
             "rETH",
             18,
             "90000000000000000000000000", // print extra few mil for user
@@ -61,7 +73,11 @@ async function deployToken(deployer, network) {
         );
     } else {
         await deployer.deploy(iETHProxy,
+<<<<<<< HEAD
             "ricequant-protocol rETH",
+=======
+            "RiceQuant ETH",
+>>>>>>> 64d579fe518083827f18fabf25f67e3e6f3fa91c
             "rETH",
             18,
             "90000000000000000000000000",
@@ -73,7 +89,11 @@ async function deployToken(deployer, network) {
     await deployer.deploy(iUSDImplementation);
     if (network != "mainnet") {
         await deployer.deploy(iUSDProxy,
+<<<<<<< HEAD
             "ricequant-protocol rUSD",
+=======
+            "RiceQuant USD",
+>>>>>>> 64d579fe518083827f18fabf25f67e3e6f3fa91c
             "rUSD",
             18,
             "90000000000000000000000000", // print extra few mil for user
@@ -82,7 +102,11 @@ async function deployToken(deployer, network) {
         );
     } else {
         await deployer.deploy(iUSDProxy,
+<<<<<<< HEAD
             "ricequant-protocol rUSD",
+=======
+            "RiceQuant iUSD",
+>>>>>>> 64d579fe518083827f18fabf25f67e3e6f3fa91c
             "rUSD",
             18,
             "90000000000000000000000000",
