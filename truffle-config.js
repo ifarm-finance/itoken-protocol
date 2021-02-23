@@ -5,7 +5,7 @@ if (result.error) {
 }
 
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-var Web3 = require('web3');
+// var Web3 = require('web3');
 
 module.exports = {
     // migrations_directory: "./migrations/ignore_migrations",
@@ -32,12 +32,12 @@ module.exports = {
             network_id: '3',
             provider: () => new HDWalletProvider(
                 [process.env.DEPLOYER_PRIVATE_KEY],
-                'https://ropsten.infura.io/v3' + process.env.INFURA_ID,
-                0, 1),
-            gasPrice: 30000000000, // 10 gwei
-            gas: 6900001,
+                'https://ropsten.infura.io/v3/' + process.env.INFURA_ID,0,1),
+            // gasPrice: 30000000000, // 10 gwei
+            gas: 6721975,
             from: process.env.DEPLOYER_ACCOUNT,
-            timeoutBlocks: 500,
+            // timeoutBlocks: 100,
+            networkCheckTimeout: 60000,
         },
         development: {
             host: '127.0.0.1',
