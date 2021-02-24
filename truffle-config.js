@@ -28,6 +28,17 @@ module.exports = {
     },
 
     networks: {
+        hecomainnet: {
+            network_id: '128',
+            provider: () => new HDWalletProvider(
+                [process.env.DEPLOYER_PRIVATE_KEY],
+                'https://http-mainnet.hecochain.com',0,1),
+            // gasPrice: 30000000000, // 10 gwei
+            gas: 6721975,
+            from: process.env.DEPLOYER_ACCOUNT,
+            // timeoutBlocks: 100,
+            networkCheckTimeout: 60000,
+        },
         hecotestnet: {
             network_id: '256',
             provider: () => new HDWalletProvider(
