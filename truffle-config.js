@@ -7,6 +7,14 @@ if (result.error) {
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 // var Web3 = require('web3');
 
+const bnbChainProvider = (network) => {
+    let rpcs = {
+        'mainnet': 'https://bsc-dataseed.binance.org',
+        'testnet': 'https://data-seed-prebsc-1-s1.binance.org:8545'
+    }
+    return new HDWalletProvider(process.env.DEPLOYER_PRIVATE_KEY || '', rpcs[network])
+};
+
 module.exports = {
     // migrations_directory: "./migrations/ignore_migrations",
     migrations_directory: "./migrations/",
@@ -32,7 +40,7 @@ module.exports = {
             network_id: '128',
             provider: () => new HDWalletProvider(
                 [process.env.DEPLOYER_PRIVATE_KEY],
-                'https://http-mainnet.hecochain.com',0,1),
+                'https://http-mainnet.hecochain.com', 0, 1),
             // gasPrice: 30000000000, // 10 gwei
             gas: 6721975,
             from: process.env.DEPLOYER_ACCOUNT,
@@ -43,7 +51,7 @@ module.exports = {
             network_id: '256',
             provider: () => new HDWalletProvider(
                 [process.env.DEPLOYER_PRIVATE_KEY],
-                'https://http-testnet.hecochain.com',0,1),
+                'https://http-testnet.hecochain.com', 0, 1),
             // gasPrice: 30000000000, // 10 gwei
             gas: 6721975,
             from: process.env.DEPLOYER_ACCOUNT,
@@ -64,6 +72,18 @@ module.exports = {
             gas: 6721975,
             network_id: '*',
         },
+        bnbtestnet: {
+            provider: bnbChainProvider('testnet'),
+            network_id: "97",  // match any network
+            gas: 6721975,
+            networkCheckTimeout: 60000,
+        },
+        bnbmainnet: {
+            provider: bnbChainProvider('mainnet'),
+            network_id: "56",  // match any network
+            gas: 6721975,
+            networkCheckTimeout: 60000,
+        }
         /*
         mainnet: {
             network_id: '1',

@@ -34,7 +34,7 @@ async function deployToken(deployer, network) {
             "RiceQuant BTC",
             "rBTC",
             18,
-            "90000000000000000000000000", // print extra few mil for user
+            "100000000000000", // print extra few mil for user (≈$5)
             iBTCImplementation.address,
             "0x"
         );
@@ -43,7 +43,7 @@ async function deployToken(deployer, network) {
             "RiceQuant BTC",
             "rBTC",
             18,
-            "90000000000000000000000000",
+            "100000000000000",
             iBTCImplementation.address,
             "0x"
         );
@@ -55,7 +55,7 @@ async function deployToken(deployer, network) {
             "RiceQuant ETH",
             "rETH",
             18,
-            "90000000000000000000000000", // print extra few mil for user
+            "3000000000000000", // print extra few mil for user (≈$5)
             iBTCImplementation.address,
             "0x"
         );
@@ -64,7 +64,7 @@ async function deployToken(deployer, network) {
             "RiceQuant ETH",
             "rETH",
             18,
-            "90000000000000000000000000",
+            "3000000000000000",
             iETHImplementation.address,
             "0x"
         );
@@ -76,7 +76,7 @@ async function deployToken(deployer, network) {
             "RiceQuant USD",
             "rUSD",
             18,
-            "90000000000000000000000000", // print extra few mil for user
+            "5000000000000000000", // print extra few mil for user (≈$5)
             iBTCImplementation.address,
             "0x"
         );
@@ -85,7 +85,7 @@ async function deployToken(deployer, network) {
             "RiceQuant iUSD",
             "rUSD",
             18,
-            "90000000000000000000000000",
+            "5000000000000000000",
             iUSDImplementation.address,
             "0x"
         );
