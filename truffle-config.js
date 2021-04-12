@@ -12,12 +12,31 @@ const bnbChainProvider = (network) => {
         'mainnet': 'https://bsc-dataseed.binance.org',
         'testnet': 'https://data-seed-prebsc-1-s1.binance.org:8545'
     }
-    return new HDWalletProvider(process.env.DEPLOYER_PRIVATE_KEY || '', rpcs[network])
+    let private_key = {
+        'mainnet': process.env.DEPLOYER_PRIVATE_KEY || '',
+        'testnet': process.env.TEST_DEPLOYER_PRIVATE_KEY || ''
+    }
+    return new HDWalletProvider(private_key[network], rpcs[network])
+};
+
+const infuraProvider = (network) => {
+    let rpc = `https://${network}.infura.io/v3/${process.env.INFURA_ID}`
+    let private_key = {
+      'mainnet': process.env.DEPLOYER_PRIVATE_KEY || '',
+      'rinkeby': process.env.TEST_DEPLOYER_PRIVATE_KEY || ''
+    }
+    return new HDWalletProvider(private_key[network], rpc)
 };
 
 module.exports = {
     // migrations_directory: "./migrations/ignore_migrations",
     migrations_directory: "./migrations/",
+    plugins: [
+        'truffle-plugin-verify'
+    ],
+    api_keys: {
+        bscscan: process.env.BSC_SCAN_API_KEY
+    },
     compilers: {
         solc: {
             version: '0.5.17',
@@ -65,12 +84,12 @@ module.exports = {
             gas: 6721975,
             network_id: '*',
         },
-        demo: {
+        remote: {
             host: '8.129.187.233',
             port: 28545,
             // gasPrice: 100000000000, // 100 gwei
             gas: 6721975,
-            network_id: '*',
+            network_id: '4',
         },
         bnbtestnet: {
             provider: bnbChainProvider('testnet'),
@@ -81,6 +100,12 @@ module.exports = {
         bnbmainnet: {
             provider: bnbChainProvider('mainnet'),
             network_id: "56",  // match any network
+            gas: 6721975,
+            networkCheckTimeout: 60000,
+        },
+        rinkeby: {
+            provider: infuraProvider('rinkeby'),
+            network_id: "4",  // match any network
             gas: 6721975,
             networkCheckTimeout: 60000,
         }

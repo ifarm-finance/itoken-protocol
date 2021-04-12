@@ -566,6 +566,10 @@ contract LPTokenWrapper {
 
     mapping(address => uint256) private _balances;
 
+    function setLPToken(address lpToken) external onlyOwner {
+        uni_lp = IERC20(lpToken);
+    }
+
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
@@ -621,6 +625,10 @@ contract YasnayaPolyana is LPTokenWrapper, IRewardDistributionRecipient {
             userRewardPerTokenPaid[account] = rewardPerTokenStored;
         }
         _;
+    }
+
+    function setiToken(address itoken) external onlyOwner {
+        iusd = IERC20(itoken);
     }
 
     function lastTimeRewardApplicable() public view returns (uint256) {

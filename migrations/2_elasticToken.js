@@ -13,13 +13,22 @@ const iTokenProxy = artifacts.require("iTokenDelegator");
 
 const iBTCImplementation = iETHImplementation = iUSDImplementation = iTokenImplementation;
 const iBTCProxy = iETHProxy = iUSDProxy = iTokenProxy;
+const contractAddress = {
+    "rUSD": "",
+    "rBTC": "",
+    "rETH": ""
+}
 
 // ============ Main Migration ============
 
 const migration = async (deployer, network) => {
+    if (network.indexOf('fork') != -1) {
+        return
+    }
     await Promise.all([
         deployToken(deployer, network),
     ]);
+    console.log(JSON.stringify(contractAddress))
 };
 
 module.exports = migration;
@@ -38,6 +47,7 @@ async function deployToken(deployer, network) {
             iBTCImplementation.address,
             "0x"
         );
+        contractAddress.rBTC = iBTCProxy.address;
     } else {
         await deployer.deploy(iBTCProxy,
             "RiceQuant BTC",
@@ -47,6 +57,7 @@ async function deployToken(deployer, network) {
             iBTCImplementation.address,
             "0x"
         );
+        contractAddress.rBTC = iBTCProxy.address;
     }
 
     await deployer.deploy(iETHImplementation);
@@ -59,6 +70,7 @@ async function deployToken(deployer, network) {
             iBTCImplementation.address,
             "0x"
         );
+        contractAddress.rETH = iETHProxy.address;
     } else {
         await deployer.deploy(iETHProxy,
             "RiceQuant ETH",
@@ -68,6 +80,7 @@ async function deployToken(deployer, network) {
             iETHImplementation.address,
             "0x"
         );
+        contractAddress.rETH = iETHProxy.address;
     }
 
     await deployer.deploy(iUSDImplementation);
@@ -80,15 +93,17 @@ async function deployToken(deployer, network) {
             iBTCImplementation.address,
             "0x"
         );
+        contractAddress.rUSD = iUSDProxy.address;
     } else {
         await deployer.deploy(iUSDProxy,
-            "RiceQuant iUSD",
+            "RiceQuant USD",
             "rUSD",
             18,
             "5000000000000000000",
             iUSDImplementation.address,
             "0x"
         );
+        contractAddress.rUSD = iUSDProxy.address;
     }
 
 }
