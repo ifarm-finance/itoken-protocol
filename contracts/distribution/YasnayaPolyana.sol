@@ -556,7 +556,7 @@ contract IRewardDistributionRecipient is Ownable {
     }
 }
 
-contract LPTokenWrapper {
+contract LPTokenWrapper is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -628,7 +628,7 @@ contract YasnayaPolyana is LPTokenWrapper, IRewardDistributionRecipient {
     }
 
     function setiToken(address itoken) external onlyOwner {
-        iusd = IERC20(itoken);
+        ibtc = IERC20(itoken);
     }
 
     function lastTimeRewardApplicable() public view returns (uint256) {

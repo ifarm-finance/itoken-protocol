@@ -556,7 +556,7 @@ contract IRewardDistributionRecipient is Ownable {
     }
 }
 
-contract LPTokenWrapper {
+contract LPTokenWrapper is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
