@@ -1,82 +1,86 @@
-const { time } = require('@openzeppelin/test-helpers');
-const { getDeployedContract } = require("./config/contract_address")
-const BN = web3.utils.BN;
+const { time, constants } = require('@openzeppelin/test-helpers');
+const contractModels = require("./config/contractModel")
+
 // ============ Contracts ============
 const Rebaser = artifacts.require('iTokenRebaser');
 const Reserves = artifacts.require("iTokenReserves");
-
-// load deployed contract address
-const DeployedContract = getDeployedContract()
+const iTokenDelegator = artifacts.require("iTokenDelegator");
 
 const tokens = {
-    'DAI': DeployedContract.tokensAddress.DAI,
-    'wBTC': DeployedContract.tokensAddress.wBTC,
-    'wETH': DeployedContract.tokensAddress.wETH,
-    'iUSD': DeployedContract.itokensAddress.iUSD,
-    'iBTC': DeployedContract.itokensAddress.iBTC,
-    'iETH': DeployedContract.itokensAddress.iETH,
+    "rUSD": "rUSD",
+    "rBTC": "rBTC",
+    "rETH": "rETH",
+    "USDT": "HUSD",
+    "BTC": "HBTC",
+    "ETH": "HETH"
 }
 
-const uniswap = {
-    'uniswapFactory': DeployedContract.uniswapsAddress.uniswapV2Factory,
-    'uniswapV2Router': DeployedContract.uniswapsAddress.uniswapV2Router,
+// 4 hour: 60*60*4 = 14400 sec
+// 1 hour: 60*60 = 3600 sec
+const RebaseTimingParameters = {
+    "bnbmainnet": {
+        "minRebaseTimeIntervalSec": "14400",
+        "rebaseWindowOffsetSec": "0",
+        "rebaseWindowLengthSec": "3600"
+    },
+    "rinkeby": {
+        "minRebaseTimeIntervalSec": "120",
+        "rebaseWindowOffsetSec": "0",
+        "rebaseWindowLengthSec": "60"
+    }
 }
 
-let contractAddress = {}
+/**
+ * Warn: 
+ * 1) Modify the hex value of the pairFor method of the rebase contract, 
+ *  and its content is consistent with the hex value in the swapRouter contract on the chain
+ *  .. rinkeby: 96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f
+ *  .. bnbmainnet: d0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66
+ */
+
 
 // ============ Main Migration ============
 const migration = async (deployer, network) => {
-    // console.log(tokens.DAI);
-    // return
+    if (network.indexOf('fork') != -1) {
+        return
+    }
+    this.contractsAddr = contractModels.formatAddress(network)
+    this.swapFactoryAddr = this.contractsAddr['factory']
     await Promise.all([
-        await deployiUSDRebaser(deployer),
-        // await deployiBTCRebaser(deployer),
-        // await deployiETHRebaser(deployer),
+        // await deployRebaser(tokens.USDT, tokens.rUSD, network),
+        await deployRebaser(tokens.BTC, tokens.rBTC, network),
+        await deployRebaser(tokens.ETH, tokens.rETH, network)
     ]);
-    // await initContract();
-    console.log(JSON.parse(contractAddress));
 };
 
 module.exports = migration;
 
 // ============ Deploy Functions ============
-async function deployiUSDRebaser(deployer) {
-    let DAIReserver = await Reserves.new(tokens.DAI, tokens.iUSD);
-    console.log(`uniswap.uniswapFactory:${uniswap.uniswapFactory}`)
-    console.log(`token address: ${tokens.iUSD},${tokens.DAI}`)
-    this.iUSDRebaser = await Rebaser.new(tokens.iUSD, tokens.DAI, uniswap.uniswapFactory, DAIReserver.address, '0x0000000000000000000000000000000000000000', 0);
-    contractAddress['iUSDRebaser'] = this.iUSDRebaser.address;
-    contractAddress['iUSDReserves'] = DAIReserver.address;
-    await DAIReserver._setRebaser(this.iUSDRebaser.address);
-    let uniswap_pair = await this.iUSDRebaser.uniswap_pair();
-    console.log(`${uniswap_pair}`);
-    await this.iUSDRebaser.init_twap();
-}
-
-async function deployiBTCRebaser(deployer) {
-    let wBTCReserver = await Reserves.new(tokens.wBTC, tokens.iBTC);
-    this.iBTCRebaser = await Rebaser.new(tokens.wBTC, tokens.iBTC, uniswap.uniswapFactory, wBTCReserver.address, '0x0000000000000000000000000000000000000000', 0);
-    contractAddress['iBTCRebaser'] = this.iBTCRebaser.address;
-    contractAddress['iBTCReserves'] = wBTCReserver.address;
-    await wBTCReserver._setRebaser(this.iBTCRebaser.address);
-    await this.iBTCRebaser.init_twap();
-}
-
-async function deployiETHRebaser(deployer) {
-    let wETHReserver = await Reserves.new(tokens.wETH, tokens.iETH);
-    this.iETHRebaser = await Rebaser.new(tokens.wETH, tokens.iETH, uniswap.uniswapFactory, wETHReserver.address, '0x0000000000000000000000000000000000000000', 0);
-    contractAddress['iETHRebaser'] = this.iETHRebaser.address;
-    contractAddress['iETHReserves'] = wETHReserver.address;
-    await wETHReserver._setRebaser(this.iETHRebaser.address);
-    await this.iETHRebaser.init_twap();
-}
-
-async function initContract() {
-    await time.increase('86400');
-    // iUSD
-    await this.iUSDRebaser.activate_rebasing();
-    // iBTC
-    await this.iBTCRebaser.activate_rebasing();
-    // iETH
-    await this.iETHRebaser.activate_rebasing();
+async function deployRebaser(token, rtoken, network) {
+    let tokenAddr = this.contractsAddr[token]
+    let itokenAddr = this.contractsAddr[rtoken]
+    let itokenInstance = await iTokenDelegator.at(itokenAddr)
+    let reserverInstance = await Reserves.new(tokenAddr, itokenAddr);
+    let rebaserInstance = await Rebaser.new(
+        itokenAddr,
+        tokenAddr,
+        this.swapFactoryAddr,
+        reserverInstance.address,
+        constants.ZERO_ADDRESS,
+        0
+    )
+    // Sets the parameters which control the timing and frequency of rebase operations.
+    if (network.indexOf('rinkeby') != -1) {
+        // testing settings
+        console.log(`test params settings...`)
+        await rebaserInstance.setRebaseTimingParameters(
+            RebaseTimingParameters[network].minRebaseTimeIntervalSec,
+            RebaseTimingParameters[network].rebaseWindowOffsetSec,
+            RebaseTimingParameters[network].rebaseWindowLengthSec
+        )
+    }
+    await reserverInstance._setRebaser(rebaserInstance.address);
+    await itokenInstance._setRebaser(rebaserInstance.address);
+    await rebaserInstance.init_twap();
+    console.log(`${rtoken}Rebaser: ${rebaserInstance.address}`)
 }

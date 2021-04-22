@@ -560,7 +560,7 @@ contract LPTokenWrapper is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0x364f980cbC06e5773c933C7266A812215B626974);
+    IERC20 public uni_lp = IERC20(0x12c0e8B32f43DF781fbFD26d38b7Ee6CF4b6b62f);
 
     uint256 private _totalSupply;
 
@@ -597,11 +597,11 @@ interface IiToken {
 }
 
 contract BlenheimPalace is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public iusd = IERC20(0x396a3BD7dD826870505532122109f8c59253F34f);
+    IERC20 public iusd = IERC20(0x4779DAEa8E7259514aBAEa2918B767B0B576FBC1);
     uint256 public constant DURATION = 7 days;
 
-    uint256 public initreward = 1200000 * 10**18; // 1,200,000 iUSD
-    uint256 public starttime = 1600560000; // 2020-09-20 00:00:00 (UTC +00:00)
+    uint256 public initreward = 2000000 * 10**18; // 2,000,000 iUSD
+    uint256 public starttime = 1618394400; // 2021-04-14 10:00:00 (UTC +00:00)
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
@@ -629,6 +629,10 @@ contract BlenheimPalace is LPTokenWrapper, IRewardDistributionRecipient {
 
     function setiToken(address itoken) external onlyOwner {
         iusd = IERC20(itoken);
+    }
+
+    function setStarttime(uint256 _starttime) external onlyOwner {
+        starttime = _starttime;
     }
 
     function lastTimeRewardApplicable() public view returns (uint256) {

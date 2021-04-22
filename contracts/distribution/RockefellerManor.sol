@@ -560,7 +560,7 @@ contract LPTokenWrapper is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public uni_lp = IERC20(0xFb598ccaaBB3296E0515c88fec9969E8D67057aE);
+    IERC20 public uni_lp = IERC20(0xDfef40c39E0064E137675dfF535d1F3D00571eb7);
 
     uint256 private _totalSupply;
 
@@ -597,11 +597,11 @@ interface IiToken {
 }
 
 contract RockefellerManor is LPTokenWrapper, IRewardDistributionRecipient {
-    IERC20 public ieth = IERC20(0x3B10CE8EE476353E90e432a8B046D7557A175caE);
+    IERC20 public ieth = IERC20(0x5f7c33Ef5Bd357F73Ca8D090fd124dF7c2c8B372);
     uint256 public constant DURATION = 7 days;
 
-    uint256 public initreward = 2500 * 10**18; // 2500 iETH
-    uint256 public starttime = 1600560000; // 2020-09-20 00:00:00 (UTC +00:00)
+    uint256 public initreward = 500 * 10**18; // 500 iETH
+    uint256 public starttime = 1618912800; // 2021-04-20 10:00:00 (UTC +00:00)
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
     uint256 public lastUpdateTime;
